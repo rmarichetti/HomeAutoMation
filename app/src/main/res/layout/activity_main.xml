@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/llMainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCurrWtr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Now" />
+
+            <ImageView
+                android:id="@+id/imCurr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvFd1Wtr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D1" />
+
+            <ImageView
+                android:id="@+id/imFd1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvFd2Wtr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D2" />
+
+            <ImageView
+                android:id="@+id/imFd2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:text="Debug" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="65dp">
+
+            <LinearLayout
+                android:id="@+id/llMainDr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="152dp">
+
+                <Button
+                    android:id="@+id/btnMainDoor"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_selector"
+                    android:onClick="OnOpenMainDoor"
+                    android:paddingLeft="25dp"
+                    android:paddingTop="25dp"
+                    android:paddingRight="25dp"
+                    android:paddingBottom="25dp"
+                    android:text="Open Front Door"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textSize="50dp"
+                    android:typeface="normal"
+                    tools:text="Open Front Door"
+                    tools:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/tvAlerts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:text="Ground Floor Front Door Open"
+                    android:textSize="50dp"
+                    tools:textColor="@android:color/holo_red_dark" />
+
+                <ToggleButton
+                    android:id="@+id/tbAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/tbMain"
+                    android:background="@drawable/toggle_selector"
+                    android:checked="false"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textOff="Alarm Off"
+                    android:textOn="Alarm On"
+                    android:textSize="14sp"  />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llMainButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="152dp">
+
+            <ToggleButton
+                android:id="@+id/tbLift"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/toggle_selector"
+                android:checked="false"
+                android:onClick="OnLift"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textOff="Lift Off"
+                android:textOn="Lift On"
+                android:textSize="50sp" />
+
+            <ToggleButton
+                android:id="@+id/tbGeyser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/toggle_selector"
+                android:checked="false"
+                android:onClick="OnGeyser"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textOff="Geyser Off"
+                android:textOn="Geyser On"
+                android:textSize="50sp" />
+
+            <ToggleButton
+                android:id="@+id/tbMBAC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/toggle_selector"
+                android:checked="false"
+                android:onClick="OnMBAC"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textOff="Master Bed AC Off"
+                android:textOn="Master Bed AC On"
+                android:textSize="50sp" />
+
+            <Switch
+                android:id="@+id/swMBACauto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right|center"
+                android:onClick="OnAutoMBAC"
+                android:text="" />
+
+            <com.santalu.maskedittext.MaskEditText
+                android:id="@+id/etStTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:textSize="20dp"
+                app:met_mask="##:##" />
+
+            <com.santalu.maskedittext.MaskEditText
+                android:id="@+id/etEdTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="time"
+                android:textSize="20dp"
+                app:met_mask="##:##" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvLogs"
+                    android:layout_width="800dp"
+                    android:layout_height="wrap_content"
+                    android:lines="28"
+                    android:text="why not show this \nnot again"
+                    android:textSize="14sp"  />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvCT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lines="23"
+                        android:text="why not show this \nnot again"
+                        tools:layout_editor_absoluteX="61dp"
+                        tools:layout_editor_absoluteY="581dp" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ToggleButton
+                            android:id="@+id/tbMain"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/toggle_selector"
+                            android:checked="false"
+                            android:onClick="OnMain"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textOff="Main Off"
+                            android:textOn="Main On"
+                            android:textSize="14sp" />
+                        <ToggleButton
+                            android:id="@+id/tbBed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/tbMain"
+                            android:background="@drawable/toggle_selector"
+                            android:checked="false"
+                            android:onClick="OnBed"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textOff="Bed Off"
+                            android:textOn="Bed On"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/tvSolarMain"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tbMain"
+                            android:lines="1"
+                            android:text="Line1"/>
+                        <TextView
+                            android:id="@+id/tvSolarBed"
+                            android:layout_below="@id/tvSolarMain"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:text="No 2"/>
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
