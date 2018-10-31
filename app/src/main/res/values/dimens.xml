@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="tvLogsHtOfficeTab">600dp</dimen>
+    <dimen name="tvLogsWdOfficeTab">600dp</dimen>
+    <dimen name="tvLogsWdPhone">400dp</dimen>
     <dimen name="tbTextSize">40sp</dimen>
 </resources>
