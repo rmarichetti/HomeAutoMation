@@ -3,6 +3,7 @@ package com.aarnamahal.homeautomation;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
@@ -33,7 +34,9 @@ import com.santalu.maskedittext.MaskEditText;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -43,7 +46,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView imView;
+    //private ImageView imView;
     public static final long DISCONNECT_TIMEOUT = 5000; //300000; // 5 min = 5 * 60 * 1000 ms
 
 
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // Perform any required operation on disconnect
             //imView.setVisibility(View.VISIBLE);
+            tvDebug.setText("idle now");
         }
     };
 
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onUserInteraction(){
         resetDisconnectTimer();
+        tvDebug.setText("Back now");
     }
 
     @Override
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         stopDisconnectTimer();
     }
 
+    public static String device ;
     private MqttAndroidClient client;
     public static Switch swMBACAuto;
     public static ToggleButton tbMBAC, tbGeyser, tbLift, tbMain, tbBed, tbAlarm;
@@ -118,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        device = Build.MANUFACTURER.concat(Build.MODEL);
+        device = device.replace(" ","_");
         InitMQTT();
 
         btnMainDoor = (Button) findViewById(R.id.btnMainDoor);
@@ -135,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         tvSolarMain = (TextView) findViewById(R.id.tvSolarMain);
         tvSolarBed = (TextView) findViewById(R.id.tvSolarBed);
 
-        imView = (ImageView) findViewById(R.id.imBkg);
+        //imView = (ImageView) findViewById(R.id.imBkg);
         InitButtonSizesAsPerDevices();
 
         InitTextToSpeech();
@@ -154,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         anim.setRepeatCount(Animation.INFINITE);
         //anim.setBackgroundColor(getResources().getColor(R.color.colorRed));
         tvAlerts.startAnimation(anim);
+        tvAlerts.setTextColor(getResources().getColor(R.color.colorAccent));
 
         autoStTm = (MaskEditText) findViewById(R.id.etStTime);
         autoEdTm = (MaskEditText) findViewById(R.id.etEdTime);
@@ -208,11 +217,11 @@ public class MainActivity extends AppCompatActivity {
         int width = displayMetrics.widthPixels;
         int newSize = 20;
         tvDebug = (TextView)findViewById(R.id.tvDebug);
-        if(BuildConfig.DEBUG)
-            tvDebug.setText("Ht:"+height+"  Wdt:"+width +"  den:"+displayMetrics.density+"  denDpi:"+displayMetrics.densityDpi+"  scDen:"+displayMetrics.scaledDensity +
-                    "  xdpi:"+displayMetrics.xdpi +"  ydpi:"+displayMetrics.ydpi+"  DM:"+displayMetrics.toString()+" swMBAC:" + tbMBAC.getTextSize());
-        else
-            tvDebug.setVisibility(View.INVISIBLE);
+        //if(BuildConfig.DEBUG)
+        //    tvDebug.setText("Ht:"+height+"  Wdt:"+width +"  den:"+displayMetrics.density+"  denDpi:"+displayMetrics.densityDpi+"  scDen:"+displayMetrics.scaledDensity +
+        //            "  xdpi:"+displayMetrics.xdpi +"  ydpi:"+displayMetrics.ydpi+"  DM:"+displayMetrics.toString()+" swMBAC:" + tbMBAC.getTextSize());
+        //else
+            //tvDebug.setVisibility(View.INVISIBLE);
         if (height == 552 || height == 1080) {
             tbMBAC.setTextSize(newSize);
             tbMBAC.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
@@ -443,6 +452,7 @@ public class MainActivity extends AppCompatActivity {
                     // We are connected
                     //Log.d(TAG, "onSuccess");
                     //Toast.makeText(MainActivity.this, "OnSuccess", Toast.LENGTH_LONG).show();
+                    Subscribe("/intercom/"+device+"/Speak");
                 }
 
                 @Override
@@ -455,6 +465,25 @@ public class MainActivity extends AppCompatActivity {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                String Msg=new String (message.getPayload());
+                tvDebug.setText(Msg);
+                tts.speak(Msg, TextToSpeech.QUEUE_FLUSH, null);
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
     }
     public void Publish (String topic, String payload) {
 
@@ -467,5 +496,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    public void Subscribe(String topic){
+        try {
+            client.subscribe(topic, 0);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

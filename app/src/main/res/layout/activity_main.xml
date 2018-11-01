@@ -241,7 +241,7 @@
                         android:id="@+id/tvCT"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:lines="23"
+                        android:lines="20"
                         android:text="why not show this \nnot again"
                         tools:layout_editor_absoluteX="61dp"
                         tools:layout_editor_absoluteY="581dp" />
@@ -250,6 +250,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
+                        <Button
+                            android:id="@+id/btnIntercom"
+                            android:background="@drawable/button_selector"
+                            android:layout_marginLeft="15dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:onClick="OnIntercom"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:text="Intercom"
+                            android:textSize="14sp" />
                         <ToggleButton
                             android:id="@+id/tbMain"
                             android:layout_width="wrap_content"

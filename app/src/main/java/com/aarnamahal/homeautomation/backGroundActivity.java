@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -349,7 +350,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     case 0:
                         fcst[fcstNo]=fcst[fcstNo].replace("Currently in Chennai International Airport, IN:", "");
                         fcst[fcstNo] = fcst[fcstNo].substring(0,fcst[fcstNo].indexOf("\n"));
-                        MainActivity.tvCurrWtr.setText(fcst[fcstNo]);
+                        MainActivity.tvCurrWtr.setText(MainActivity.device.concat(fcst[fcstNo]));
                         new ImageLoadTask(fcstImgUrl[fcstNo], MainActivity.ivCurrWtr).execute();
                         break;
                     case 1:
