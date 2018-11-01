@@ -10,14 +10,14 @@
         android:id="@+id/llMainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="top"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
+        app:layout_constraintVertical_bias="0.28">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,8 +67,8 @@
                 android:id="@+id/tvDebug"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:text="Debug" />
+                android:text="Debug"
+                android:textSize="10sp" />
 
         </LinearLayout>
 
@@ -127,7 +127,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textOff="Alarm Off"
                     android:textOn="Alarm On"
-                    android:textSize="14sp"  />
+                    android:textSize="14sp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -220,8 +220,8 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -230,11 +230,13 @@
                     android:layout_height="wrap_content"
                     android:lines="28"
                     android:text="why not show this \nnot again"
-                    android:textSize="14sp"  />
+                    android:textSize="14sp" />
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/tvCT"
                         android:layout_width="wrap_content"
@@ -247,6 +249,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
+
                         <ToggleButton
                             android:id="@+id/tbMain"
                             android:layout_width="wrap_content"
@@ -258,8 +261,10 @@
                             android:textOff="Main Off"
                             android:textOn="Main On"
                             android:textSize="14sp" />
+
                         <ToggleButton
                             android:id="@+id/tbBed"
+                            android:layout_marginLeft="5dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@id/tbMain"
@@ -270,20 +275,34 @@
                             android:textOff="Bed Off"
                             android:textOn="Bed On"
                             android:textSize="14sp" />
+                        <Button
+                            android:id="@+id/btnRefresh"
+                            android:background="@drawable/button_selector"
+                            android:layout_marginLeft="15dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/tbBed"
+                            android:checked="false"
+                            android:onClick="OnRefresh"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:text="Refresh"
+                            android:textSize="14sp" />
+
                         <TextView
                             android:id="@+id/tvSolarMain"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/tbMain"
                             android:lines="1"
-                            android:text="Line1"/>
+                            android:text="Line1" />
+
                         <TextView
                             android:id="@+id/tvSolarBed"
-                            android:layout_below="@id/tvSolarMain"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_below="@id/tvSolarMain"
                             android:lines="1"
-                            android:text="No 2"/>
+                            android:text="No 2" />
 
                     </RelativeLayout>
                 </LinearLayout>
