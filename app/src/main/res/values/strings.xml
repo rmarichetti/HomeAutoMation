@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">HomeAutoMation</string>
+    <string-array name="Intercoms">
+        <item>samsungGTP5113</item>
+        <item>XiaomiMIMAX2</item>
+        <item>samsungSMT561</item>
+        <item>unknownX1010</item>
+    </string-array>
+    <string-array name="IntercomsDisplay">
+        <item>Bedroom</item>
+        <item>DadPhone</item>
+        <item>Hall</item>
+        <item>Office</item>
+    </string-array>
 </resources>

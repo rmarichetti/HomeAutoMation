@@ -2,13 +2,7 @@ package com.aarnamahal.homeautomation;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.speech.tts.TextToSpeech;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -27,12 +21,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+//import static com.aarnamahal.homeautomation.MainActivity.timerInc;
+
 public class backGroundActivity  extends AsyncTask<String,Void,String> {
     Context context;
     String sResult;
     AlertDialog alertDialog;
     String sType;
-
+    String HomeUrl = "http://210.18.139.72/";
     String[] fcst;
     String[] fcstImgUrl;
 
@@ -146,17 +142,26 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
         else{
             try {
                 if(sType.equals("gpio")){
-                    sURL = "http://210.18.139.72/AppHomeGPIOset.php";
+                    sURL = HomeUrl + "AppHomeGPIOset.php";
                     String sGpioNo = params[1];
                     String sOnF = params[2];
                     post_data = URLEncoder.encode("gpio","UTF-8")+"="+URLEncoder.encode(sGpioNo,"UTF-8")+"&"
                             +URLEncoder.encode("on","UTF-8")+"="+URLEncoder.encode(sOnF,"UTF-8");
                 }
+                else if(sType.equals("execUrl")) {
+                    sURL =HomeUrl +params[1];
+                }
+                else if(sType.equals("execUrlfull")) {
+                    sURL =params[1];
+                }
+                else if(sType.equals("getImgFiles")) {
+                    sURL ="http://192.168.0.11:81/getFiles.php";
+                }
                 else if(sType.equals("getSwitchStatus")) {
-                    sURL ="http://210.18.139.72/getSwitchStatuses.php";
+                    sURL =HomeUrl + "getSwitchStatuses.php";
                 }
                 else if(sType.equals("showkWh")) {
-                    sURL ="http://210.18.139.72/showkWh.php?app=1";
+                    sURL =HomeUrl + "showkWh.php?app=1";
                 }
                 else if(sType.equals("Inv")) {
                     String sInvNameAndOnF = params[1];
@@ -168,27 +173,18 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                             sURL ="http://192.168.0.7/epsolar/mInvOff.php";
                             break;
                         case "BedInv:On":
-                            sURL ="http://210.18.139.72/epsolar/mInvOn.php";
+                            sURL =HomeUrl + "epsolar/mInvOn.php";
                             break;
                         case "BedInv:Off":
-                            sURL ="http://210.18.139.72/epsolar/mInvOff.php";
+                            sURL =HomeUrl + "epsolar/mInvOff.php";
                             break;
                     }
                 }
                 else if(sType.equals("showSolar")) {
-                    sURL ="http://210.18.139.72/showSolarApp.php";
+                    sURL =HomeUrl + "showSolarApp.php";
                 }
                 else if(sType.equals("getLogs")) {
-                    sURL ="http://210.18.139.72/showLogApp.php";
-                }
-                else if(sType.equals("setGPIOschedule")) {
-                    sURL ="http://192.168.0.6/setGPIOonoffTime.php";
-                    String sGpioNo = params[1];
-                    String sOnOrOffstring = params[2];//"OffTime" or "OnTime"
-                    String sTime = params[3];
-                    post_data = URLEncoder.encode("gpio","UTF-8")+"="+URLEncoder.encode(sGpioNo,"UTF-8")+"&"
-                            +URLEncoder.encode("on","UTF-8")+"="+URLEncoder.encode(sOnOrOffstring,"UTF-8")+"&"
-                            +URLEncoder.encode("on","UTF-8")+"="+URLEncoder.encode(sTime,"UTF-8");
+                    sURL =HomeUrl + "showLogApp.php";
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -269,7 +265,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
             if (sResult.indexOf("Error") > 0)
                 Toast.makeText(context, "Error getting statuses", Toast.LENGTH_LONG).show();
             else {
-                String sAlertShow, geySt, MBACSt, LiftSt, St, Ed, AutoD;
+                String sAlertShow, geySt, MBACSt, LiftSt, St, Ed, AutoD, Status;
                 if (sResult.contains("G:") && sResult.contains("M:")){
                     geySt = sResult.substring(sResult.indexOf("G:")+2,sResult.indexOf("M:"));
                     if (geySt.contains("0"))
@@ -304,23 +300,44 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                         else
                             MainActivity.sAlert ="";
                     }
+                    //sAlertShow = "Testing";
+                    //MainActivity.sAlert ="Testing now";
                     MainActivity.tvAlerts.setText(sAlertShow);
 
                 }
-                if (sResult.contains("S:") && sResult.contains("E:")){
-                    St = sResult.substring(sResult.indexOf("S:")+2,sResult.indexOf("E:"));
-                    MainActivity.autoStTm.setText(St.substring(0,5));
+                if (MainActivity.timerInc%10 == 0){
+                    if (sResult.contains("S:") && sResult.contains("E:")){
+                        St = sResult.substring(sResult.indexOf("S:")+2,sResult.indexOf("E:"));
+                        MainActivity.autoStTm.setText(St.substring(0,5));
+                    }
+                    if (sResult.contains("D:") && sResult.contains("E:")){
+                        Ed = sResult.substring(sResult.indexOf("E:")+2,sResult.indexOf("D:"));
+                        MainActivity.autoEdTm.setText(Ed.substring(0,5));
+                    }
                 }
-                if (sResult.contains("D:") && sResult.contains("E:")){
-                    Ed = sResult.substring(sResult.indexOf("E:")+2,sResult.indexOf("D:"));
-                    MainActivity.autoEdTm.setText(Ed.substring(0,5));
-                }
-                if (sResult.contains("D:") ){
-                    AutoD = sResult.substring(sResult.indexOf("D:")+2,sResult.length());
+                MainActivity.timerInc++;
+                if (MainActivity.timerInc> 60000) MainActivity.timerInc = 0;
+
+                if (sResult.contains("D:") && sResult.contains("I1:")){
+                    AutoD = sResult.substring(sResult.indexOf("D:")+2,sResult.indexOf("I1:"));
                     if (AutoD.contains("0"))
                         MainActivity.swMBACAuto.setChecked(true);
                     else
                         MainActivity.swMBACAuto.setChecked(false);
+                }
+                if (sResult.contains("I1:") && sResult.contains("I2:")){
+                    Status = sResult.substring(sResult.indexOf("I1:")+3,sResult.indexOf("I2:"));
+                    if (Status.contains("Off"))
+                        MainActivity.tbMain.setChecked(false);
+                    else
+                        MainActivity.tbMain.setChecked(true);
+                }
+                if (sResult.contains("I2:") ){
+                    Status = sResult.substring(sResult.indexOf("I2:")+3,sResult.length());
+                    if (Status.contains("Off"))
+                        MainActivity.tbBed.setChecked(false);
+                    else
+                        MainActivity.tbBed.setChecked(true);
                 }
             }
         }
@@ -344,13 +361,18 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 MainActivity.tvSolarBed.setText(sResult.substring(sResult.indexOf("<br>")+4,sResult.length()-4));
             }
         }
+        else if(sType == "getImgFiles") {
+            //String[] imgFiles;
+            MainActivity.imgFiles = sResult.split(";");
+            //int i = 4;
+        }
         else if(sType == "getWeather"){
             for (int fcstNo=0;fcstNo<3; fcstNo++){
                 switch (fcstNo){
                     case 0:
                         fcst[fcstNo]=fcst[fcstNo].replace("Currently in Chennai International Airport, IN:", "");
                         fcst[fcstNo] = fcst[fcstNo].substring(0,fcst[fcstNo].indexOf("\n"));
-                        MainActivity.tvCurrWtr.setText(MainActivity.device.concat(fcst[fcstNo]));
+                        MainActivity.tvCurrWtr.setText( fcst[fcstNo] );
                         new ImageLoadTask(fcstImgUrl[fcstNo], MainActivity.ivCurrWtr).execute();
                         break;
                     case 1:
