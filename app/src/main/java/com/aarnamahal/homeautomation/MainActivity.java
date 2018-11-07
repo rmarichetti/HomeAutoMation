@@ -91,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
     public void changeImgScrSvr(){
         imgNo++;
         if (imgNo>=imgMaxNo) imgNo=0;
-        Picasso.get().load(imgFiles[imgNo]).into(imageScrSvr);
-
+        //Picasso.get().load(imgFiles[imgNo]).resize(1152, 864).rotate(0).into(imageScrSvr);
+        //imageScrSvr.setImageResource("");
+        new ImageLoadTask(imgFiles[imgNo], imageScrSvr).execute();
         dialogScrSvr.setContentView(imageScrSvr);
 
         disconnectHandler.postDelayed(disconnectCallback, CHANGE_SCR_SAVER);
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     public static Spinner spIntercom;
     public static String sIntercomSelected;
     public static MaskEditText autoStTm, autoEdTm;
-    private Button btnMainDoor;
+    public static Button btnMainDoor;
     private LinearLayout llMainButtons;
     public static TextToSpeech tts;
     public static String sAlert;
@@ -244,7 +245,8 @@ public class MainActivity extends AppCompatActivity {
         //            "  xdpi:"+displayMetrics.xdpi +"  ydpi:"+displayMetrics.ydpi+"  DM:"+displayMetrics.toString()+" swMBAC:" + tbMBAC.getTextSize());
         //else
             //tvDebug.setVisibility(View.INVISIBLE);
-        if (height == 552 || height == 1080) {
+        if (device.equals(getResources().getStringArray(R.array.Intercoms)[3]) ||
+                device.equals(getResources().getStringArray(R.array.Intercoms)[1])) {
             tbMBAC.setTextSize(newSize);
             tbMBAC.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
             tbGeyser.setTextSize(newSize);
@@ -259,10 +261,10 @@ public class MainActivity extends AppCompatActivity {
             tvLogs.setTextSize(newSize/2);
 
             ViewGroup.LayoutParams tvparams = tvLogs.getLayoutParams();
-            if (height == 1080) {
+            if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdPhone);
-                tvLogs.setLines(20);
-                tvCT.setLines(5);
+                tvLogs.setLines(30);
+                tvCT.setLines(15);
             }
             else{//Mi Max 2
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdOfficeTab);
@@ -272,13 +274,14 @@ public class MainActivity extends AppCompatActivity {
             tvCT.setTextSize(newSize/2);
             tvSolarMain.setTextSize(newSize/2);
             tvSolarBed.setTextSize(newSize/2);
+            //tvCT.setLines(7);
 
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) llMainButtons.getLayoutParams();
             params.topMargin =newSize;
             llMainButtons.setLayoutParams(params);
 
         }
-        else if (height == 800){// Samsung hall test
+        else if (device.equals(getResources().getStringArray(R.array.Intercoms)[2])){// Samsung hall test
 
             tbMBAC.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbGeyser.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
@@ -363,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                     //var url = "setGPIOonoffTime.php?GPIOno="+24+"&OnOff="+OffTime+"&Time='"+06:40+"'";
                     backGroundActivity bA = new backGroundActivity(MainActivity.this);
                     //bA.execute("setGPIOschedule", "24", "OnTime",autoStTm.getText().toString());//  switch on MBAC time
-                    bA.execute("execUrl", "setGPIOonoffTime.php?GPIOno=24&OnOff=OnTime&Time='"+autoStTm.getText().toString()+"'");
+                    bA.execute("execUrlfull", "http://192/168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OnTime&Time='"+autoStTm.getText().toString()+"'");
 
                     Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
                     //Toast.makeText(MainActivity.this, autoStTm.getRawText(), Toast.LENGTH_LONG).show();
@@ -381,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
                     //var url = "setGPIOonoffTime.php?GPIOno="+24+"&OnOff="+OffTime+"&Time='"+06:40+"'";
                     backGroundActivity bA = new backGroundActivity(MainActivity.this);
                     //bA.execute("setGPIOschedule", "24", "OffTime",autoStTm.getText().toString());//switch off MBAC time
-                    bA.execute("execUrl", "setGPIOonoffTime.php?GPIOno=24&OnOff=OffTime&Time='"+autoEdTm.getText().toString()+"'");
+                    bA.execute("execUrlfull", "http://192/168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OffTime&Time='"+autoEdTm.getText().toString()+"'");
                     Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
                     return true;
                 }
@@ -582,8 +585,8 @@ public class MainActivity extends AppCompatActivity {
                     // We are connected
                     //Log.d(TAG, "onSuccess");
                     String scsD = "/intercom/"+device+"/Speak";
-                    Toast.makeText(MainActivity.this, "OnSuccess:"+scsD, Toast.LENGTH_LONG).show();
-                    tvDebug.setText(scsD);
+                    //Toast.makeText(MainActivity.this, "OnSuccess:"+scsD, Toast.LENGTH_LONG).show();
+                    //tvDebug.setText(scsD);
                     Subscribe(scsD);
                     //Subscribe("/intercom/samsungGT_5113/Speak");
                 }

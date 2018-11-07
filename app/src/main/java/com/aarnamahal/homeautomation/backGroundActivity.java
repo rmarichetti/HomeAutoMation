@@ -31,6 +31,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
     String HomeUrl = "http://210.18.139.72/";
     String[] fcst;
     String[] fcstImgUrl;
+    String[] swStatuses;
 
     backGroundActivity (Context ctx){
         context = ctx;
@@ -265,6 +266,65 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
             if (sResult.indexOf("Error") > 0)
                 Toast.makeText(context, "Error getting statuses", Toast.LENGTH_LONG).show();
             else {
+                swStatuses = sResult.split(";");
+                //MainDoorOk;GeyserStatus;MBACStatus;LiftOnStatus;Alerts;OnTime;OffTime;DisabledFlag;invMainSt;invBedSt
+                if(swStatuses[0].contains("0"))
+                    MainActivity.btnMainDoor.setBackgroundResource(R.drawable.button_selector_red);
+                else
+                    MainActivity.btnMainDoor.setBackgroundResource(R.drawable.button_selector);
+
+                if(swStatuses[1].contains("0"))
+                    MainActivity.tbGeyser.setChecked(true);
+                else
+                    MainActivity.tbGeyser.setChecked(false);
+
+                if (swStatuses[2].contains("1"))
+                    MainActivity.tbMBAC.setChecked(true);
+                else
+                    MainActivity.tbMBAC.setChecked(false);
+
+                if (swStatuses[3].contains("1"))
+                    MainActivity.tbLift.setChecked(true);
+                else
+                    MainActivity.tbLift.setChecked(true);
+
+                MainActivity.sAlert = swStatuses[4];
+                String sAlertShow="";
+                if (MainActivity.sAlert.length()> 0) {
+                    sAlertShow = MainActivity.sAlert.substring(2);
+                    if(MainActivity.sAlert.substring(0,1).equals("0"))// When 0 it means disable flag is off.. means announce
+                        MainActivity.sAlert = sAlertShow;
+                    else
+                        MainActivity.sAlert ="";
+                }
+                //sAlertShow = "Testing";
+                //MainActivity.sAlert ="Testing now";
+                MainActivity.tvAlerts.setText(sAlertShow);
+
+                if (MainActivity.timerInc%10 == 0){
+                    if (swStatuses[5].length()>0)
+                        MainActivity.autoStTm.setText(swStatuses[5].substring(0,5));
+                    if (swStatuses[6].length()>0)
+                        MainActivity.autoEdTm.setText(swStatuses[6].substring(0,5));
+                }
+                MainActivity.timerInc++;
+                if (MainActivity.timerInc> 60000) MainActivity.timerInc = 0;
+
+                if (swStatuses[7].contains("0"))
+                    MainActivity.swMBACAuto.setChecked(true);
+                else
+                    MainActivity.swMBACAuto.setChecked(false);
+
+                if (swStatuses[8].contains("Off"))
+                    MainActivity.tbMain.setChecked(false);
+                else
+                    MainActivity.tbMain.setChecked(true);
+
+                if (swStatuses[9].contains("Off"))
+                    MainActivity.tbBed.setChecked(false);
+                else
+                    MainActivity.tbBed.setChecked(true);
+                /*
                 String sAlertShow, geySt, MBACSt, LiftSt, St, Ed, AutoD, Status;
                 if (sResult.contains("G:") && sResult.contains("M:")){
                     geySt = sResult.substring(sResult.indexOf("G:")+2,sResult.indexOf("M:"));
@@ -339,6 +399,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     else
                         MainActivity.tbBed.setChecked(true);
                 }
+                */
             }
         }
         else if(sType == "getLogs"){
