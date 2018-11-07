@@ -272,7 +272,16 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     MainActivity.btnMainDoor.setBackgroundResource(R.drawable.button_selector_red);
                 else
                     MainActivity.btnMainDoor.setBackgroundResource(R.drawable.button_selector);
-
+                if (MainActivity.device.equals(context.getResources().getStringArray(R.array.Intercoms)[3]) ||
+                        MainActivity.device.equals(context.getResources().getStringArray(R.array.Intercoms)[1])) {
+                    MainActivity.btnMainDoor.setTextSize(20);
+                    MainActivity.btnMainDoor.setPadding(20,20,20,20);
+                }
+                else{
+                    MainActivity.btnMainDoor.setTextSize(40);
+                    MainActivity.btnMainDoor.setPadding(40,40,40,40);
+                }
+                MainActivity.btnMainDoor.setPadding(10,10,10,10);
                 if(swStatuses[1].contains("0"))
                     MainActivity.tbGeyser.setChecked(true);
                 else
@@ -447,31 +456,6 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 }
             }
         }
-        else {
-            if(sResult == null)
-            {
-                //registerClient.etName.setText("testing");
-                // do what you want to do
-            } else if(sResult.contains("Registration Success"))
-            {
-                Toast.makeText(context, sResult, Toast.LENGTH_LONG).show();
-                //registerClient.sClient = sResult.substring(sResult.indexOf(":") + 1);
-            }
-            else if(sResult.contains("Login Success")) // msg you get from success like "Login Success"
-            {
-                alertDialog.setMessage(sResult);
-                alertDialog.show();
-
-            }
-            else if(sResult!=null)
-            {
-                alertDialog.setMessage(sResult);
-                alertDialog.show();
-
-            }
-
-        }
-
     }
 
     @Override

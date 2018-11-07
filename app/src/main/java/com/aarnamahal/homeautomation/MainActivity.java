@@ -245,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
         //            "  xdpi:"+displayMetrics.xdpi +"  ydpi:"+displayMetrics.ydpi+"  DM:"+displayMetrics.toString()+" swMBAC:" + tbMBAC.getTextSize());
         //else
             //tvDebug.setVisibility(View.INVISIBLE);
+        tvCurrTm.setTextColor(getResources().getColor(R.color.colorLightBlue));
         if (device.equals(getResources().getStringArray(R.array.Intercoms)[3]) ||
                 device.equals(getResources().getStringArray(R.array.Intercoms)[1])) {
             tbMBAC.setTextSize(newSize);
@@ -262,13 +263,16 @@ public class MainActivity extends AppCompatActivity {
 
             ViewGroup.LayoutParams tvparams = tvLogs.getLayoutParams();
             if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){
-                tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdPhone);
-                tvLogs.setLines(30);
-                tvCT.setLines(15);
+                tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdOfficeTab);
+                tvLogs.setLines(35);
+                tvCT.setLines(20);
             }
             else{//Mi Max 2
-                tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdOfficeTab);
+                tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdPhone);
                 tvLogs.setLines(32);
+                tvCT.setLines(7);
+                tbAlarm.setPadding(5,5,5,5);
+                tbScrSvr.setPadding(5,5,5,5);
             }
             tvLogs.setLayoutParams(tvparams);
             tvCT.setTextSize(newSize/2);
@@ -286,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
             tbMBAC.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbGeyser.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbLift.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
-
+            tbAlarm.setChecked(true);
         }
     }
     private void initScreenSaver(){
@@ -362,16 +366,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i==EditorInfo.IME_ACTION_DONE){
-                    Toast.makeText(MainActivity.this, "Staring to update sch", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "Staring to update sch", Toast.LENGTH_LONG).show();
                     //var url = "setGPIOonoffTime.php?GPIOno="+24+"&OnOff="+OffTime+"&Time='"+06:40+"'";
                     backGroundActivity bA = new backGroundActivity(MainActivity.this);
                     //bA.execute("setGPIOschedule", "24", "OnTime",autoStTm.getText().toString());//  switch on MBAC time
-                    bA.execute("execUrlfull", "http://192/168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OnTime&Time='"+autoStTm.getText().toString()+"'");
+                    bA.execute("execUrlfull", "http://192.168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OnTime&Time='"+autoStTm.getText().toString()+"'");
 
-                    Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
                     //Toast.makeText(MainActivity.this, autoStTm.getRawText(), Toast.LENGTH_LONG).show();
                     //Toast.makeText(MainActivity.this, autoStTm.getText(), Toast.LENGTH_LONG).show();
-                    return true;
+                    //return true;
                 }
                 return false;
             }
@@ -380,13 +384,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i==EditorInfo.IME_ACTION_DONE){
-                    Toast.makeText(MainActivity.this, "Staring to update sch", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "Staring to update sch", Toast.LENGTH_LONG).show();
                     //var url = "setGPIOonoffTime.php?GPIOno="+24+"&OnOff="+OffTime+"&Time='"+06:40+"'";
                     backGroundActivity bA = new backGroundActivity(MainActivity.this);
                     //bA.execute("setGPIOschedule", "24", "OffTime",autoStTm.getText().toString());//switch off MBAC time
-                    bA.execute("execUrlfull", "http://192/168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OffTime&Time='"+autoEdTm.getText().toString()+"'");
-                    Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
-                    return true;
+                    bA.execute("execUrlfull", "http://192.168.0.6/setGPIOonoffTime.php?GPIOno=24&OnOff=OffTime&Time='"+autoEdTm.getText().toString()+"'");
+                    //Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
+                    //return true;
                 }
                 return false;
             }
@@ -427,8 +431,9 @@ public class MainActivity extends AppCompatActivity {
     private void refreshNow(){
 
         imgMaxNo = imgFiles.length;
-
-        tvCurrTm.setText(new SimpleDateFormat("dd HH:mm").format(Calendar.getInstance().getTime()).toString());
+        String CurrTm = new SimpleDateFormat("MMMd,h:mm").format(Calendar.getInstance().getTime()).toString();
+        //CurrTm = CurrTm.replace(" ","");
+        tvCurrTm.setText(CurrTm);
         backGroundActivity bASS = new backGroundActivity(MainActivity.this);
         bASS.execute("getSwitchStatus");
         backGroundActivity bAwtr = new backGroundActivity(MainActivity.this);
