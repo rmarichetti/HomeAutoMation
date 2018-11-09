@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
             tvSolarMain.setTextSize(newSize/2);
             tvSolarBed.setTextSize(newSize/2);
             //tvCT.setLines(7);
-
+            btnMainDoor.setPadding(newSize,newSize,newSize,newSize);
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) llMainButtons.getLayoutParams();
             params.topMargin =newSize;
             llMainButtons.setLayoutParams(params);
@@ -577,6 +577,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
+    public void OnInitMQTT (View view){
+        initMQTT();
+    }
     private void initMQTT(){
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(this.getApplicationContext(), "tcp://210.18.139.72:1883",
@@ -604,6 +607,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } catch (MqttException e) {
+            tvDebug.setText("MQTT exception");
+            Toast.makeText(MainActivity.this, "MQTT exception", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
         client.setCallback(new MqttCallback() {
@@ -634,6 +639,8 @@ public class MainActivity extends AppCompatActivity {
             MqttMessage message = new MqttMessage(encodedPayload);
             client.publish(topic, message);
         } catch (UnsupportedEncodingException | MqttException e) {
+            tvDebug.setText("MQTT Publish exception");
+            Toast.makeText(MainActivity.this, "MQTT Publish exception", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }

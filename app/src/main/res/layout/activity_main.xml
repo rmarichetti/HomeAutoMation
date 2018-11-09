@@ -115,6 +115,7 @@
                     android:layout_marginLeft="20dp"
                     android:text="7:32 Nov 2"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     tools:textColor="@android:color/holo_blue_dark" />
                 <TextView
                     android:id="@+id/tvAlerts"
@@ -295,6 +296,18 @@
                             android:checked="false"
                             android:onClick="OnRefresh"
                             android:text="Refresh"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textSize="14sp" />
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/btnRefresh"
+                            android:layout_below="@+id/spIntNo"
+                            android:background="@drawable/button_selector"
+                            android:onClick="OnInitMQTT"
+                            android:text="Init MQTT"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textSize="14sp" />
 
