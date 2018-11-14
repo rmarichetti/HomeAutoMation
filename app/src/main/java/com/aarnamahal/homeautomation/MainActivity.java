@@ -262,10 +262,10 @@ public class MainActivity extends AppCompatActivity {
             tvLogs.setTextSize(newSize/2);
 
             ViewGroup.LayoutParams tvparams = tvLogs.getLayoutParams();
-            if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){
+            if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){//office
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdOfficeTab);
-                tvLogs.setLines(35);
-                tvCT.setLines(20);
+                tvLogs.setLines(40);
+                tvCT.setLines(19);
             }
             else{//Mi Max 2
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdPhone);
@@ -291,6 +291,9 @@ public class MainActivity extends AppCompatActivity {
             tbGeyser.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbLift.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbAlarm.setChecked(true);
+        }
+        else if (device.equals(getResources().getStringArray(R.array.Intercoms)[0])){// Samsung Bedroom
+            spIntercom.setSelection(2);
         }
     }
     private void initScreenSaver(){
@@ -355,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sIntercomSelected = getResources().getStringArray(R.array.Intercoms)[position];//.getItemAtPosition(position).toString();
-                tvDebug.setText(sIntercomSelected);
+                tvDebug.setText("IntercomSelected:" + sIntercomSelected);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -563,7 +566,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked
-                        Publish("/home/gndMainDoor/OpenCmd", "1");
+                        //Publish("/home/gndMainDoor/OpenCmd", "1");
+                        backGroundActivity bA = new backGroundActivity(MainActivity.this);
+                        bA.execute("openMainDoor");
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -576,9 +581,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
-    }
-    public void OnInitMQTT (View view){
-        initMQTT();
     }
     private void initMQTT(){
         String clientId = MqttClient.generateClientId();
@@ -620,7 +622,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String Msg=new String (message.getPayload());
-                tvDebug.setText(Msg);
+                tvDebug.setText("Message Arrived:" + Msg);
                 tts.speak(Msg, TextToSpeech.QUEUE_FLUSH, null);
 
             }
@@ -634,6 +636,11 @@ public class MainActivity extends AppCompatActivity {
     public void Publish (String topic, String payload) {
 
         byte[] encodedPayload = new byte[0];
+        if (!client.isConnected()){
+            tvDebug.setText("MQTT Not Connected... reconnecting.");
+            Toast.makeText(MainActivity.this, "MQTT Not Connected... reconnecting.", Toast.LENGTH_LONG).show();
+            initMQTT();
+        }
         try {
             encodedPayload = payload.getBytes("UTF-8");
             MqttMessage message = new MqttMessage(encodedPayload);
@@ -643,6 +650,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "MQTT Publish exception", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+
     }
     public void Subscribe(String topic){
         try {

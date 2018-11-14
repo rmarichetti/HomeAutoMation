@@ -149,6 +149,10 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     post_data = URLEncoder.encode("gpio","UTF-8")+"="+URLEncoder.encode(sGpioNo,"UTF-8")+"&"
                             +URLEncoder.encode("on","UTF-8")+"="+URLEncoder.encode(sOnF,"UTF-8");
                 }
+                else if(sType.equals("openMainDoor")){
+                    sURL = HomeUrl + "mainDoorOpen.php";
+                    post_data = URLEncoder.encode("device","UTF-8")+"="+URLEncoder.encode(MainActivity.device,"UTF-8");
+                }
                 else if(sType.equals("execUrl")) {
                     sURL =HomeUrl +params[1];
                 }
@@ -281,7 +285,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     MainActivity.btnMainDoor.setTextSize(40);
                     MainActivity.btnMainDoor.setPadding(40,40,40,40);
                 }
-                MainActivity.btnMainDoor.setPadding(10,10,10,10);
+                //MainActivity.btnMainDoor.setPadding(10,10,10,10);
                 if(swStatuses[1].contains("0"))
                     MainActivity.tbGeyser.setChecked(true);
                 else
