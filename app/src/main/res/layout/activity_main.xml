@@ -258,15 +258,95 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvCT"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lines="19"
-                        android:text="why not show this \nnot again"
-                        tools:layout_editor_absoluteX="61dp"
-                        tools:layout_editor_absoluteY="581dp" />
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tvCT"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lines="15"
+                            android:text="why not show this \nnot again"
+                            tools:layout_editor_absoluteX="61dp"
+                            tools:layout_editor_absoluteY="581dp" />
+                        <TextView
+                            android:id="@+id/tvFNs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/tvCT"
+                            android:lines="15"
+                            android:text="why not show this \nnot again"
+                            tools:layout_editor_absoluteX="61dp"
+                            tools:layout_editor_absoluteY="581dp" />
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <Button
+                            android:id="@+id/btnHallAC1Ind"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:onClick="OnHallAC1"
+                            android:background="@color/colorGreen"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="2ndAC1" />
+                        <Button
+                            android:id="@+id/btnHallAC2Ind"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="1dp"
+                            android:layout_toRightOf="@id/btnHallAC1Ind"
+                            android:onClick="OnHallAC2"
+                            android:background="@color/colorGreen"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="2ndAC2" />
+                        <Button
+                            android:id="@+id/btnHallAC3Ind"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="1dp"
+                            android:layout_toRightOf="@id/btnHallAC2Ind"
+                            android:onClick="OnHallAC3"
+                            android:background="@color/colorGreen"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="2ndAC3" />
+                        <Button
+                            android:id="@+id/btnLiftInd"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="1dp"
+                            android:onClick="OnLiftInd"
+                            android:layout_below="@id/btnHallAC1Ind"
+                            android:background="@color/colorTorchRed"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="Lift" />
 
+                        <Button
+                            android:id="@+id/btnDinAC1Ind"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="1dp"
+                            android:layout_marginTop="1dp"
+                            android:layout_toRightOf="@id/btnLiftInd"
+                            android:layout_below="@id/btnHallAC1Ind"
+                            android:onClick="OnDinAC1Ind"
+                            android:background="@color/colorGreen"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="1stAC1" />
+                        <Button
+                            android:id="@+id/btnDinAC2Ind"
+                            android:layout_width="60dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="1dp"
+                            android:layout_marginLeft="1dp"
+                            android:layout_toRightOf="@id/btnDinAC1Ind"
+                            android:layout_below="@id/btnHallAC1Ind"
+                            android:onClick="OnDinAC2Ind"
+                            android:background="@color/colorGreen"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            tools:text="1stAC2" />
+
+                    </RelativeLayout>
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">

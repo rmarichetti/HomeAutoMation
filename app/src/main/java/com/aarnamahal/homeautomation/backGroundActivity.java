@@ -168,6 +168,9 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 else if(sType.equals("showkWh")) {
                     sURL =HomeUrl + "showkWh.php?app=1";
                 }
+                else if(sType.equals("showFns")) {
+                    sURL =HomeUrl + "showFns.php?app=1";
+                }
                 else if(sType.equals("Inv")) {
                     String sInvNameAndOnF = params[1];
                     switch (sInvNameAndOnF){
@@ -263,7 +266,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
             }
             else if(sResult.contains("changed gpio successfully")){
-                Toast.makeText(context, sResult, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, sResult, Toast.LENGTH_LONG).show();
             }
         }
         else if(sType == "getSwitchStatus"){
@@ -271,7 +274,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 Toast.makeText(context, "Error getting statuses", Toast.LENGTH_LONG).show();
             else {
                 swStatuses = sResult.split(";");
-                //MainDoorOk;GeyserStatus;MBACStatus;LiftOnStatus;Alerts;OnTime;OffTime;DisabledFlag;invMainSt;invBedSt
+                //MainDoorOk;GeyserStatus;MBACStatus;LiftOnStatus;Alerts;OnTime;OffTime;DisabledFlag;invMainSt;invBedSt;switchStatuses::...;SolarWaterTemp
                 if(swStatuses[0].contains("0"))
                     MainActivity.btnMainDoor.setBackgroundResource(R.drawable.button_selector_red);
                 else
@@ -304,8 +307,9 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 MainActivity.sAlert = swStatuses[4];
                 String sAlertShow="";
                 if (MainActivity.sAlert.length()> 0) {
-                    sAlertShow = MainActivity.sAlert.substring(2);
-                    if(MainActivity.sAlert.substring(0,1).equals("0"))// When 0 it means disable flag is off.. means announce
+                    String [] sAlertArr = MainActivity.sAlert.split(":");
+                    sAlertShow = sAlertArr[1];//.sAlert.substring(2);
+                    if(Integer.parseInt(sAlertArr[0])<1)// When 0 or less than 1 it means disable flag is off.. means announce
                         MainActivity.sAlert = sAlertShow;
                     else
                         MainActivity.sAlert ="";
@@ -337,82 +341,80 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     MainActivity.tbBed.setChecked(false);
                 else
                     MainActivity.tbBed.setChecked(true);
-                /*
-                String sAlertShow, geySt, MBACSt, LiftSt, St, Ed, AutoD, Status;
-                if (sResult.contains("G:") && sResult.contains("M:")){
-                    geySt = sResult.substring(sResult.indexOf("G:")+2,sResult.indexOf("M:"));
-                    if (geySt.contains("0"))
-                        MainActivity.tbGeyser.setChecked(true);
-                    else
-                        MainActivity.tbGeyser.setChecked(false);
-                }
-                if (sResult.contains("L:") && sResult.contains("M:")){
-                    MBACSt = sResult.substring(sResult.indexOf("M:")+2,sResult.indexOf("L:"));
-                    if (MBACSt.contains("1"))
-                        MainActivity.tbMBAC.setChecked(true);
-                    else
-                        MainActivity.tbMBAC.setChecked(false);
-                }
-                if (sResult.contains("L:") && sResult.contains("A:")){
-                    LiftSt = sResult.substring(sResult.indexOf("L:")+2,sResult.indexOf("A:"));
-                    if (LiftSt.contains("1"))
-                        MainActivity.tbLift.setChecked(true);
-                    else
-                        MainActivity.tbLift.setChecked(true);
-                }
-                if (sResult.contains("S:") && sResult.contains("A:")){
-                    MainActivity.sAlert = sResult.substring(sResult.indexOf("A:")+2,sResult.indexOf("S:"));
 
-                    //MainActivity.sAlert = "0 Testing Back Door Open";
+                //btnLiftInd, btnDinAC1, btnDinAC2, btnHallAC1, btnHallAC2, btnHallAC3
+                String[] sMhSw;
 
-                    sAlertShow="";
-                    if (MainActivity.sAlert.length()> 0) {
-                        sAlertShow = MainActivity.sAlert.substring(2);
-                        if(MainActivity.sAlert.substring(0,1).equals("0"))// When 0 it means disable flag is off.. means announce
-                            MainActivity.sAlert = sAlertShow;
-                        else
-                            MainActivity.sAlert ="";
+
+                if (swStatuses[10].contains("Dl")){
+                    sMhSw = swStatuses[10].split(":");
+                    MainActivity.btnDinAC1.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnDinAC1.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnDinAC1.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sDinAC1 = sMhSw[2];
+                }
+                if (swStatuses[11].contains("Dr")){
+                    sMhSw = swStatuses[11].split(":");
+                    MainActivity.btnDinAC2.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnDinAC2.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnDinAC2.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sDinAC2 = sMhSw[2];
+                }
+                if (swStatuses[12].contains("Lift")){
+                    sMhSw = swStatuses[12].split(":");
+                    MainActivity.btnLiftInd.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnLiftInd.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnLiftInd.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sLiftInd = sMhSw[2];
+                }
+                if (swStatuses[13].contains("MH1")){
+                    sMhSw = swStatuses[13].split(":");
+                    MainActivity.btnHallAC1.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnHallAC1.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnHallAC1.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sHallAC1 = sMhSw[2];
+                }
+                if (swStatuses[14].contains("MH2")){
+                    sMhSw = swStatuses[14].split(":");
+                    MainActivity.btnHallAC2.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnHallAC2.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnHallAC2.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sHallAC2 = sMhSw[2];
+                }
+                if (swStatuses[15].contains("MH3")){
+                    sMhSw = swStatuses[15].split(":");
+                    MainActivity.btnHallAC3.setText(sMhSw[0]);
+                    if (sMhSw[1].contains("1"))
+                        MainActivity.btnHallAC3.setBackgroundColor(context.getResources().getColor(R.color.colorTorchRed));
+                    else
+                        MainActivity.btnHallAC3.setBackgroundColor(context.getResources().getColor(R.color.colorGreen));
+                    MainActivity.sHallAC3 = sMhSw[2];
+                }
+                String sTemp= swStatuses[16];
+                if (sTemp.length()> 0) {
+                    MainActivity.tbGeyser.setTextOff(sTemp +"º Geyser Off");
+                    MainActivity.tbGeyser.setTextOn(sTemp +"º Geyser On");
+                    int iTemp =Integer.parseInt(sTemp);
+                    if (iTemp>32){
+                        MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector));
                     }
-                    //sAlertShow = "Testing";
-                    //MainActivity.sAlert ="Testing now";
-                    MainActivity.tvAlerts.setText(sAlertShow);
-
-                }
-                if (MainActivity.timerInc%10 == 0){
-                    if (sResult.contains("S:") && sResult.contains("E:")){
-                        St = sResult.substring(sResult.indexOf("S:")+2,sResult.indexOf("E:"));
-                        MainActivity.autoStTm.setText(St.substring(0,5));
+                    else if (iTemp>27 && iTemp<=32){
+                        MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_warning));
                     }
-                    if (sResult.contains("D:") && sResult.contains("E:")){
-                        Ed = sResult.substring(sResult.indexOf("E:")+2,sResult.indexOf("D:"));
-                        MainActivity.autoEdTm.setText(Ed.substring(0,5));
+                    if (iTemp<=27){
+                        MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_critical_warning));
                     }
                 }
-                MainActivity.timerInc++;
-                if (MainActivity.timerInc> 60000) MainActivity.timerInc = 0;
-
-                if (sResult.contains("D:") && sResult.contains("I1:")){
-                    AutoD = sResult.substring(sResult.indexOf("D:")+2,sResult.indexOf("I1:"));
-                    if (AutoD.contains("0"))
-                        MainActivity.swMBACAuto.setChecked(true);
-                    else
-                        MainActivity.swMBACAuto.setChecked(false);
-                }
-                if (sResult.contains("I1:") && sResult.contains("I2:")){
-                    Status = sResult.substring(sResult.indexOf("I1:")+3,sResult.indexOf("I2:"));
-                    if (Status.contains("Off"))
-                        MainActivity.tbMain.setChecked(false);
-                    else
-                        MainActivity.tbMain.setChecked(true);
-                }
-                if (sResult.contains("I2:") ){
-                    Status = sResult.substring(sResult.indexOf("I2:")+3,sResult.length());
-                    if (Status.contains("Off"))
-                        MainActivity.tbBed.setChecked(false);
-                    else
-                        MainActivity.tbBed.setChecked(true);
-                }
-                */
             }
         }
         else if(sType == "getLogs"){
@@ -426,6 +428,13 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
             if (sResult.contains("<bt>") )
                 sResult = sResult.replace("<bt>","\t");
             MainActivity.tvCT.setText(sResult);
+        }
+        else if(sType == "showFns"){
+            if (sResult.contains("<br>") )
+                sResult = sResult.replace("<br>","\n");
+            if (sResult.contains("<bt>") )
+                sResult = sResult.replace("<bt>","\t");
+            MainActivity.tvFNs.setText(sResult);
         }
         else if(sType == "showSolar"){
             if (sResult.contains("<bt>") )

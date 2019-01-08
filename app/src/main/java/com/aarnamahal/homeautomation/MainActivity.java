@@ -90,10 +90,11 @@ public class MainActivity extends AppCompatActivity {
     };
     public void changeImgScrSvr(){
         imgNo++;
+
         if (imgNo>=imgMaxNo) imgNo=0;
-        //Picasso.get().load(imgFiles[imgNo]).resize(1152, 864).rotate(0).into(imageScrSvr);
+        Picasso.get().load(imgUrl[imgNo]).into(imageScrSvr);
         //imageScrSvr.setImageResource("");
-        new ImageLoadTask(imgFiles[imgNo], imageScrSvr).execute();
+        //new ImageLoadTask(imgFiles[imgNo], imageScrSvr).execute();
         dialogScrSvr.setContentView(imageScrSvr);
 
         disconnectHandler.postDelayed(disconnectCallback, CHANGE_SCR_SAVER);
@@ -140,12 +141,13 @@ public class MainActivity extends AppCompatActivity {
     private MqttAndroidClient client;
     public static Switch swMBACAuto;
     public static ToggleButton tbMBAC, tbGeyser, tbLift, tbMain, tbBed, tbAlarm, tbScrSvr;
-    public static TextView tvCurrWtr, tvFd1Wtr, tvFd2Wtr, tvAlerts, tvLogs, tvCT, tvSolarMain, tvSolarBed, tvCurrTm, tvDebug;
+    public static TextView tvCurrWtr, tvFd1Wtr, tvFd2Wtr, tvAlerts, tvLogs, tvCT, tvFNs, tvSolarMain, tvSolarBed, tvCurrTm, tvDebug;
     public static ImageView ivCurrWtr, ivFd1Wtr,ivFd2Wtr;
     public static Spinner spIntercom;
     public static String sIntercomSelected;
     public static MaskEditText autoStTm, autoEdTm;
-    public static Button btnMainDoor;
+    public static Button btnMainDoor, btnLiftInd, btnDinAC1, btnDinAC2, btnHallAC1, btnHallAC2, btnHallAC3;
+    public static String sLiftInd, sDinAC1, sDinAC2, sHallAC1, sHallAC2, sHallAC3;
     private LinearLayout llMainButtons;
     public static TextToSpeech tts;
     public static String sAlert;
@@ -213,6 +215,13 @@ public class MainActivity extends AppCompatActivity {
         autoEdTm = (MaskEditText) findViewById(R.id.etEdTime);
 
         btnMainDoor = (Button) findViewById(R.id.btnMainDoor);
+        btnLiftInd = (Button) findViewById(R.id.btnLiftInd);
+        btnDinAC1 = (Button) findViewById(R.id.btnDinAC1Ind);
+        btnDinAC2 = (Button) findViewById(R.id.btnDinAC2Ind);
+        btnHallAC1 = (Button) findViewById(R.id.btnHallAC1Ind);
+        btnHallAC2 = (Button) findViewById(R.id.btnHallAC2Ind);
+        btnHallAC3 = (Button) findViewById(R.id.btnHallAC3Ind);
+
         tbMBAC =  findViewById(R.id.tbMBAC);
         tbLift =  findViewById(R.id.tbLift);
         tbGeyser =  findViewById(R.id.tbGeyser);
@@ -226,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
         llMainButtons = (LinearLayout) findViewById(R.id.llMainButtons);
         tvLogs = (TextView) findViewById(R.id.tvLogs);
         tvCT = (TextView) findViewById(R.id.tvCT);
+        tvFNs = (TextView) findViewById(R.id.tvFNs);
         tvSolarMain = (TextView) findViewById(R.id.tvSolarMain);
         tvSolarBed = (TextView) findViewById(R.id.tvSolarBed);
         tvCurrTm = (TextView) findViewById(R.id.tvCurrTm);
@@ -264,18 +274,21 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams tvparams = tvLogs.getLayoutParams();
             if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){//office
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdOfficeTab);
-                tvLogs.setLines(40);
-                tvCT.setLines(19);
+                tvLogs.setLines(45);
+                tvCT.setLines(10);
+                tvFNs.setLines(10);
             }
             else{//Mi Max 2
                 tvparams.width = getResources().getDimensionPixelSize(R.dimen.tvLogsWdPhone);
                 tvLogs.setLines(32);
                 tvCT.setLines(7);
+                tvFNs.setLines(7);
                 tbAlarm.setPadding(5,5,5,5);
                 tbScrSvr.setPadding(5,5,5,5);
             }
             tvLogs.setLayoutParams(tvparams);
             tvCT.setTextSize(newSize/2);
+            tvFNs.setTextSize(newSize/2);
             tvSolarMain.setTextSize(newSize/2);
             tvSolarBed.setTextSize(newSize/2);
             //tvCT.setLines(7);
@@ -286,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else if (device.equals(getResources().getStringArray(R.array.Intercoms)[2])){// Samsung hall test
-
             tbMBAC.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbGeyser.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
             tbLift.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
@@ -296,12 +308,60 @@ public class MainActivity extends AppCompatActivity {
             spIntercom.setSelection(2);
         }
     }
-    private void initScreenSaver(){
 
+    private void initScreenSaver(){
         String sPath = "http://192.168.0.11:81/getFiles.php";
         //sPath = "http://192.168.0.6/bookings/listBookingsv2.php";
         backGroundActivity bA = new backGroundActivity(MainActivity.this);
         bA.execute("getImgFiles");
+        //File dir = new File(sPath);
+        //File[] files = dir.listFiles();
+        //tvDebug.setText(files.length + files[0].getName());
+/*
+        try {
+            URL url = new URL(sPath);
+            URLConnection conn = url.openConnection();
+            InputStream inputStream = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+             String line = null;
+            System.out.println("--- START ---");
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            System.out.println("--- END
+             inputStream.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }*/
+        imageScrSvr = new ImageView(this);
+        imgMaxNo = 7;
+        imgUrl = new String[imgMaxNo];
+        imgNo = 0;
+        imgUrl[0]= "http://192.168.0.6/slsw/sld/PictureGangaFam1.jpg";//http://www.uniwallpaper.com/static/images/6663822_orig.jpg";
+        imgUrl[1] = "http://www.uniwallpaper.com/static/images/2016-bb-chevrolet-cars-seo-masthead-1480x551.jpg";
+        imgUrl[2] = "http://www.uniwallpaper.com/static/images/Sydney-harbour-bei-nacht-wallpaper_1GCx7Bu.JPG";
+        imgUrl[3] = "http://www.uniwallpaper.com/static/images/Spring-Colours-Wallpaper_BeOup6e.jpg";
+        imgUrl[4] = "http://www.uniwallpaper.com/static/images/Autumn_Wallpaper_by_emats_R3bf4pr.jpg";
+        imgUrl[5] = "http://www.uniwallpaper.com/static/images/road_along-wallpaper-1366x768_RjeqmhA.jpg";
+        imgUrl[6] = "http://www.uniwallpaper.com/static/images/1712173_DxY27jV.jpg";
+        Picasso.get().load(imgUrl[imgNo]).into(imageScrSvr);
+        dialogScrSvr=new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialogScrSvr.setContentView(imageScrSvr);
+        imageScrSvr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogScrSvr.dismiss();
+                resetDisconnectTimer();
+                refreshNow();
+            }
+        });
+    }
+    private void initScreenSaver2(){
+
+        //String sPath = "http://192.168.0.11:81/getFiles.php";
+        //sPath = "http://192.168.0.6/bookings/listBookingsv2.php";
+        //backGroundActivity bA = new backGroundActivity(MainActivity.this);
+        //bA.execute("getImgFiles");
 
         //File dir = new File(sPath);
         //File[] files = dir.listFiles();
@@ -326,15 +386,15 @@ public class MainActivity extends AppCompatActivity {
         }*/
         imageScrSvr = new ImageView(this);
         imgMaxNo = 7;
-        imgUrl = new String[imgMaxNo];
+        imgFiles = new String[imgMaxNo];
         imgNo = 0;
-        imgUrl[0]= "http://192.168.0.6/slsw/sld/PictureGangaFam1.jpg";//http://www.uniwallpaper.com/static/images/6663822_orig.jpg";
-        imgUrl[1] = "http://www.uniwallpaper.com/static/images/2016-bb-chevrolet-cars-seo-masthead-1480x551.jpg";
-        imgUrl[2] = "http://www.uniwallpaper.com/static/images/Sydney-harbour-bei-nacht-wallpaper_1GCx7Bu.JPG";
-        imgUrl[3] = "http://www.uniwallpaper.com/static/images/Spring-Colours-Wallpaper_BeOup6e.jpg";
-        imgUrl[4] = "http://www.uniwallpaper.com/static/images/Autumn_Wallpaper_by_emats_R3bf4pr.jpg";
-        imgUrl[5] = "http://www.uniwallpaper.com/static/images/road_along-wallpaper-1366x768_RjeqmhA.jpg";
-        imgUrl[6] = "http://www.uniwallpaper.com/static/images/1712173_DxY27jV.jpg";
+        imgFiles[0]= "http://www.uniwallpaper.com/static/images/6663822_orig.jpg";//http://192.168.0.6/slsw/sld/PictureGangaFam1.jpg";
+        imgFiles[1] = "http://www.uniwallpaper.com/static/images/2016-bb-chevrolet-cars-seo-masthead-1480x551.jpg";
+        imgFiles[2] = "http://www.uniwallpaper.com/static/images/Sydney-harbour-bei-nacht-wallpaper_1GCx7Bu.JPG";
+        imgFiles[3] = "http://www.uniwallpaper.com/static/images/Spring-Colours-Wallpaper_BeOup6e.jpg";
+        imgFiles[4] = "http://www.uniwallpaper.com/static/images/Autumn_Wallpaper_by_emats_R3bf4pr.jpg";
+        imgFiles[5] = "http://www.uniwallpaper.com/static/images/road_along-wallpaper-1366x768_RjeqmhA.jpg";
+        imgFiles[6] = "http://www.uniwallpaper.com/static/images/1712173_DxY27jV.jpg";
         Picasso.get().load(imgUrl[imgNo]).into(imageScrSvr);
         dialogScrSvr=new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialogScrSvr.setContentView(imageScrSvr);
@@ -433,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void refreshNow(){
 
-        imgMaxNo = imgFiles.length;
+        imgMaxNo = 7;//imgFiles.length;
         String CurrTm = new SimpleDateFormat("MMMd,h:mm").format(Calendar.getInstance().getTime()).toString();
         //CurrTm = CurrTm.replace(" ","");
         tvCurrTm.setText(CurrTm);
@@ -445,19 +505,14 @@ public class MainActivity extends AppCompatActivity {
         bAlogs.execute("getLogs");
         backGroundActivity bAkWh = new backGroundActivity(MainActivity.this);
         bAkWh.execute("showkWh");
+        backGroundActivity bAFns = new backGroundActivity(MainActivity.this);
+        bAFns.execute("showFns");
         backGroundActivity bASolar = new backGroundActivity(MainActivity.this);
         bASolar.execute("showSolar");
 
         if (sAlert!= null){//Some alerts have popped up.. Need to announce it every 30 secs.
-            if (sAlert.length()>0 && tbAlarm.isChecked()){
-                if (iAlertSpeakTime > 5){//30 secs up.
-                    MainActivity.tts.speak(sAlert, TextToSpeech.QUEUE_FLUSH, null);
-                    iAlertSpeakTime = 0;
-                }
-                else if (iAlertSpeakTime==0)//first
-                    MainActivity.tts.speak(sAlert, TextToSpeech.QUEUE_FLUSH, null);
-                iAlertSpeakTime++;
-            }
+            if (sAlert.length()>0 && tbAlarm.isChecked())
+                Speak(sAlert);
             if (sAlert.length()==0)
                 iAlertSpeakTime = 0;
         }
@@ -465,13 +520,22 @@ public class MainActivity extends AppCompatActivity {
             iAlertSpeakTime = 0;
         timerHandler.postDelayed(timerRunnable, 5000);
     }
-    public void OnIntercom (View view){
+    private void Speak(String speakString){
+        if (iAlertSpeakTime > 5)//30 secs up.
+            iAlertSpeakTime = 0;
+
+        if (iAlertSpeakTime==0)
+            MainActivity.tts.speak(speakString, TextToSpeech.QUEUE_FLUSH, null);
+        iAlertSpeakTime++;
+
+    }public void OnIntercom (View view){
         //Publish("/intercom/samsungGT-5113/Speak", "can you come down NOW?");
         promptSpeechInput();
 
     }
     public void OnRefresh (View view){
         refreshNow();
+        ChangeBackGroundColor();
     }
     public void OnGeyser (View view){
         if (tbGeyser.isChecked()){
@@ -482,7 +546,9 @@ public class MainActivity extends AppCompatActivity {
                         case DialogInterface.BUTTON_POSITIVE:
                             //Yes button clicked
                             backGroundActivity bA = new backGroundActivity(MainActivity.this);
-                            bA.execute("execUrl","geyserOnAndSchOff.php?OffAfter=20");//  switch on  Geyser and schedule off after 20 mins
+                            bA.execute("gpio", "26", "0");//  switch on  Geyser
+                            backGroundActivity bA2 = new backGroundActivity(MainActivity.this);
+                            bA2.execute("execUrlfull", "http://192.168.0.6/geyserSchOff.php?OffAfter=20");//  switch on  Geyser and schedule off after 20 mins
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
@@ -499,6 +565,38 @@ public class MainActivity extends AppCompatActivity {
             backGroundActivity bA = new backGroundActivity(MainActivity.this);
             bA.execute("gpio", "26", "1");//  switch off  Geyser
         }
+    }
+//    public static Button btnMainDoor, btnLiftInd, btnDinAC1, btnDinAC2, btnHallAC1, btnHallAC2, btnHallAC3;
+//    public static String sLiftInd, sDinAC1, sDinAC2, sHallAC1, sHallAC2, sHallAC3;
+    public void OnLiftInd (View view){
+        String sReplace = btnLiftInd.getText().toString();
+        btnLiftInd.setText(sLiftInd);
+        sLiftInd = sReplace;
+    }
+    public void OnDinAC1Ind (View view){
+        String sReplace = btnDinAC1.getText().toString();
+        btnDinAC1.setText(sDinAC1);
+        sDinAC1 = sReplace;
+    }
+    public void OnDinAC2Ind (View view){
+        String sReplace = btnDinAC2.getText().toString();
+        btnDinAC2.setText(sDinAC2);
+        sDinAC2 = sReplace;
+    }
+    public void OnHallAC1 (View view){
+        String sReplace = btnHallAC1.getText().toString();
+        btnHallAC1.setText(sHallAC1);
+        sHallAC1 = sReplace;
+    }
+    public void OnHallAC2 (View view){
+        String sReplace = btnHallAC2.getText().toString();
+        btnHallAC2.setText(sHallAC2);
+        sHallAC2 = sReplace;
+    }
+    public void OnHallAC3 (View view){
+        String sReplace = btnHallAC3.getText().toString();
+        btnHallAC3.setText(sHallAC3);
+        sHallAC3 = sReplace;
     }
     public void OnLift (View view){
         if (tbLift.isChecked()){
@@ -623,6 +721,7 @@ public class MainActivity extends AppCompatActivity {
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String Msg=new String (message.getPayload());
                 tvDebug.setText("Message Arrived:" + Msg);
+                Speak(Msg);
                 tts.speak(Msg, TextToSpeech.QUEUE_FLUSH, null);
 
             }
