@@ -72,24 +72,13 @@
 
         </LinearLayout>
 
-
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="65dp">
-
-            <LinearLayout
-                android:id="@+id/llMainDr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:orientation="horizontal"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="152dp">
-
+            android:id="@+id/llMainDr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
                 <Button
                     android:id="@+id/btnMainDoor"
                     style="@style/Widget.AppCompat.Button.Colored"
@@ -107,51 +96,60 @@
                     android:typeface="normal"
                     tools:text="Open Front Door"
                     tools:textColor="@android:color/white" />
-
                 <TextView
                     android:id="@+id/tvCurrTm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:text="7:32 Nov 2"
-                    android:textSize="24sp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Wed28,12:04"
+                    android:layout_toRightOf="@id/btnMainDoor"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     tools:textColor="@android:color/holo_blue_dark" />
-                <TextView
-                    android:id="@+id/tvAlerts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:text="Ground Floor Front Door Open"
-                    android:textSize="50dp"
-                    tools:textColor="@android:color/holo_red_dark" />
-
                 <ToggleButton
                     android:id="@+id/tbAlarm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/tbMain"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/tvCurrTm"
+                    android:layout_toRightOf="@id/btnMainDoor"
                     android:background="@drawable/toggle_selector"
                     android:checked="false"
+                    android:onClick="OnAlarm"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textOff="Alarm Off"
                     android:textOn="Alarm On"
                     android:textSize="10sp" />
                 <ToggleButton
                     android:id="@+id/tbScrSvr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/tbAlarm"
+                    android:layout_toRightOf="@id/btnMainDoor"
                     android:layout_marginLeft="5dp"
-                    android:layout_toRightOf="@id/tbMain"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/toggle_selector"
                     android:checked="false"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textOff="scrsvr Off"
-                    android:textOn="scrsvr On"
+                    android:textOff="ScrSvr Off"
+                    android:textOn="ScrSvr On"
                     android:textSize="10sp" />
+                <TextView
+                    android:id="@+id/tvAlerts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/tbAlarm"
+                    android:text="Ground Floor Front Door Open"
+                    android:textSize="40dp"
+                    tools:textColor="@android:color/holo_red_dark" />
 
-            </LinearLayout>
+            </RelativeLayout>
+
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/llMainButtons"
@@ -159,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="152dp">
@@ -242,17 +240,100 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="1dp"
                 android:orientation="horizontal">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tvOff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="Office:" />
+                    <ToggleButton
+                        android:id="@+id/tbOffAC"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:onClick="OnOffAC"
+                        android:background="@drawable/toggle_selector"
+                        android:layout_below="@+id/tvOff"
+                        android:textOff="AC"
+                        android:textOn="AC"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <ToggleButton
+                        android:id="@+id/tbOffLgt"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:textOff="Lights"
+                        android:textOn="Lights"
+                        android:layout_below="@+id/tvOff"
+                        android:layout_toRightOf="@id/tbOffAC"
+                        android:onClick="OnOffLgt"
+                        android:background="@drawable/toggle_selector"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <ToggleButton
+                        android:id="@+id/tbOffFan"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:layout_below="@+id/tvOff"
+                        android:layout_toRightOf="@id/tbOffLgt"
+                        android:onClick="OnOffFan"
+                        android:textOff="Fan"
+                        android:textOn="Fan"
+                        android:background="@drawable/toggle_selector"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <TextView
+                        android:id="@+id/tvLiv"
+                        android:layout_marginLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/tbOffFan"
+                        android:text="Living:" />
+                    <ToggleButton
+                        android:id="@+id/tbLivLgtE"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:onClick="OnLivLgtE"
+                        android:layout_marginLeft="2dp"
+                        android:background="@drawable/toggle_selector"
+                        android:layout_below="@+id/tvLiv"
+                        android:layout_toRightOf="@id/tbOffFan"
+                        android:textOff="LightsE"
+                        android:textOn="LightsE"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <ToggleButton
+                        android:id="@+id/tbLivLgtW"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:textOff="LightsW"
+                        android:textOn="LightsW"
+                        android:layout_below="@+id/tvOff"
+                        android:layout_toRightOf="@id/tbLivLgtE"
+                        android:onClick="OnLivLgtW"
+                        android:background="@drawable/toggle_selector"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <ToggleButton
+                        android:id="@+id/tbLivFan"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:layout_below="@+id/tvOff"
+                        android:layout_toRightOf="@id/tbLivLgtW"
+                        android:onClick="OnLivFan"
+                        android:textOff="Fan"
+                        android:textOn="Fan"
+                        android:background="@drawable/toggle_selector"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"  />
+                    <TextView
+                        android:id="@+id/tvLogs"
+                        android:layout_width="800dp"
+                        android:layout_height="wrap_content"
+                        android:lines="28"
+                        android:layout_below="@+id/tbOffAC"
+                        android:text="why not show this \nnot again"
+                        android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/tvLogs"
-                    android:layout_width="800dp"
-                    android:layout_height="wrap_content"
-                    android:lines="28"
-                    android:text="why not show this \nnot again"
-                    android:textSize="14sp" />
-
+                </RelativeLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

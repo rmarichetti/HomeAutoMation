@@ -36,4 +36,5 @@ dependencies {
         exclude module: 'support-v4'
     }
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.android.support:exifinterface:27.1.1'
 }

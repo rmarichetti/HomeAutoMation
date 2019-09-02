@@ -153,6 +153,14 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     sURL = HomeUrl + "mainDoorOpen.php";
                     post_data = URLEncoder.encode("device","UTF-8")+"="+URLEncoder.encode(MainActivity.device,"UTF-8");
                 }
+                else if(sType.equals("mos_qt")){
+                    sURL = HomeUrl + "mos_qt.php";
+                    String sTop = params[1];
+                    String sM = params[2];
+                    post_data = URLEncoder.encode("device","UTF-8")+"="+URLEncoder.encode(MainActivity.device,"UTF-8")+"&"
+                            +URLEncoder.encode("top","UTF-8")+"="+URLEncoder.encode(sTop,"UTF-8")+"&"
+                            +URLEncoder.encode("m","UTF-8")+"="+URLEncoder.encode(sM,"UTF-8");
+                }
                 else if(sType.equals("execUrl")) {
                     sURL =HomeUrl +params[1];
                 }
@@ -160,7 +168,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     sURL =params[1];
                 }
                 else if(sType.equals("getImgFiles")) {
-                    sURL ="http://192.168.0.11:81/getFiles.php";
+                    sURL ="http://192.168.0.11/getFiles.php";
                 }
                 else if(sType.equals("getSwitchStatus")) {
                     sURL =HomeUrl + "getSwitchStatuses.php";
@@ -415,6 +423,26 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                         MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_critical_warning));
                     }
                 }
+                if (swStatuses[17].length()> 0){
+                    String[] sTchSwSt = swStatuses[17].split("~");
+                    String[] sTchSw;
+                    boolean bSwOn;
+                    for(int sw = 0; sw<sTchSwSt.length; sw++) {
+                        sTchSw = sTchSwSt[sw].split(":");
+                        if(sTchSw[2].contains("1")) bSwOn=true;
+                        else bSwOn = false;
+                        if (sTchSw[0].contains("/home/tchSwOffice/OnCmd")) {
+                            if( sTchSw[1].contains("L")) MainActivity.tbOffLgt.setChecked(bSwOn);
+                            else if(sTchSw[1].contains("F")) MainActivity.tbOffFan.setChecked(bSwOn);
+                            else if(sTchSw[1].contains("A")) MainActivity.tbOffAC.setChecked(bSwOn);
+                        }
+                        if (sTchSw[0].contains("/home/tchSwliv/OnCmd")) {
+                            if( sTchSw[1].contains("E")) MainActivity.tbLivLgtE.setChecked(bSwOn);
+                            else if(sTchSw[1].contains("W")) MainActivity.tbLivLgtW.setChecked(bSwOn);
+                            else if(sTchSw[1].contains("F")) MainActivity.tbLivFan.setChecked(bSwOn);
+                        }
+                    }
+                }
             }
         }
         else if(sType == "getLogs"){
@@ -447,6 +475,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
         else if(sType == "getImgFiles") {
             //String[] imgFiles;
             MainActivity.imgFiles = sResult.split(";");
+            MainActivity.imgMaxNo = MainActivity.imgFiles.length;
             //int i = 4;
         }
         else if(sType == "getWeather"){

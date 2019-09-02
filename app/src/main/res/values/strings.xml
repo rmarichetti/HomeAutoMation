@@ -5,11 +5,13 @@
         <item>XiaomiMIMAX2</item>
         <item>samsungSMT561</item>
         <item>unknownX1010</item>
+        <item>IKALLIKALL</item>
     </string-array>
     <string-array name="IntercomsDisplay">
         <item>Bedroom</item>
         <item>DadPhone</item>
         <item>Hall</item>
         <item>Office</item>
+        <item>Hall2</item>
     </string-array>
 </resources>
