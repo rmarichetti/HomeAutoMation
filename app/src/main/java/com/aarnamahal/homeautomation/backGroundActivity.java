@@ -2,6 +2,8 @@ package com.aarnamahal.homeautomation;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -28,11 +31,12 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
     String sResult;
     AlertDialog alertDialog;
     String sType;
-    String HomeUrl = "http://210.18.139.72/";
+    String HomeUrl = "http://192.168.0.6/"; // "http://210.18.139.72/";
     String[] fcst;
     String[] fcstImgUrl;
     String[] swStatuses;
-
+    String sURL="";
+    boolean bSiteReachable ;
     backGroundActivity (Context ctx){
         context = ctx;
     }
@@ -45,100 +49,106 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params){
         sType = params[0];
-        String sURL="";
         String post_data="";
         if(sType.equals("getWeather")) {
-            fcst = new String[3];
-            fcstImgUrl = new String[3];
-            int getUntil = 1;
-            String forecastFull;
-            try
-            {
-                URL url = new URL("http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=VOMM");
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(false);
-                XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(getInputStream(url), "UTF_8");
 
-                String testTitle="", testDesc = "";
-                boolean insideItem = false;
-                int fcstNo = 0;
-                // Returns the type of current event: START_TAG, END_TAG, START_DOCUMENT, END_DOCUMENT etc..
-                int eventType = xpp.getEventType(); //loop control variable
-                while (eventType != XmlPullParser.END_DOCUMENT)
+            bSiteReachable = isServerReachable(context, "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=VOMM");
+//            if (sURL != "http://192.168.0.11/getFiles.php")
+//                bSiteReachable = isServerReachable(context, sURL);
+            if (bSiteReachable) {
+                fcst = new String[3];
+                fcstImgUrl = new String[3];
+                int getUntil = 1;
+                String forecastFull;
+                try
                 {
-                    //if we are at a START_TAG (opening tag)
-                    if (eventType == XmlPullParser.START_TAG)
+                    URL url = new URL("http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=VOMM");
+                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                    factory.setNamespaceAware(false);
+                    XmlPullParser xpp = factory.newPullParser();
+                    xpp.setInput(getInputStream(url), "UTF_8");
+
+                    String testTitle="", testDesc = "";
+                    boolean insideItem = false;
+                    int fcstNo = 0;
+                    // Returns the type of current event: START_TAG, END_TAG, START_DOCUMENT, END_DOCUMENT etc..
+                    int eventType = xpp.getEventType(); //loop control variable
+                    while (eventType != XmlPullParser.END_DOCUMENT)
                     {
-                        //if the tag is called "item"
-                        if (xpp.getName().equalsIgnoreCase("item"))
+                        //if we are at a START_TAG (opening tag)
+                        if (eventType == XmlPullParser.START_TAG)
                         {
-                            insideItem = true;
-                        }
-                        //if the tag is called "title"
-                        else if (xpp.getName().equalsIgnoreCase("title"))
-                        {
-                            if (insideItem)
+                            //if the tag is called "item"
+                            if (xpp.getName().equalsIgnoreCase("item"))
                             {
-                                // extract the text between <title> and </title>
-                                testTitle = testTitle + xpp.nextText();
+                                insideItem = true;
                             }
-                        }
-                        //if the tag is called "link"
-                        else if (xpp.getName().equalsIgnoreCase("description"))
-                        {
-                            if (insideItem)
+                            //if the tag is called "title"
+                            else if (xpp.getName().equalsIgnoreCase("title"))
                             {
-
-                                if (fcstNo<3){
-                                    forecastFull = xpp.nextText();
-                                    fcst[fcstNo] = forecastFull.substring(0,forecastFull.indexOf("<"));
-
-                                    //extract the image from it.
-                                    if (fcstNo> 0) {
-                                        getUntil = 2;
-                                        fcst[fcstNo]=fcst[fcstNo].replace("High:", "");
-                                        fcst[fcstNo]=fcst[fcstNo].replace("Low:", "");
-                                        fcst[fcstNo]=fcst[fcstNo].replace(" C", "°C");
-                                        if (fcstNo==1)
-                                            fcst[fcstNo]="   Tomm:"+ fcst[fcstNo];
-                                        else if (fcstNo==2)
-                                            fcst[fcstNo]="   DayAfter:"+ fcst[fcstNo];
-
-                                    }
-                                    else {
-                                        fcst[fcstNo]="Today:"+fcst[fcstNo].replace(" °C", "°C");
-                                    }
-                                    fcstImgUrl[fcstNo] =forecastFull.substring(forecastFull.indexOf("img src=")+9,forecastFull.indexOf(">")-getUntil);
-
+                                if (insideItem)
+                                {
+                                    // extract the text between <title> and </title>
+                                    testTitle = testTitle + xpp.nextText();
                                 }
-                                fcstNo++;
+                            }
+                            //if the tag is called "link"
+                            else if (xpp.getName().equalsIgnoreCase("description"))
+                            {
+                                if (insideItem)
+                                {
+
+                                    if (fcstNo<3){
+                                        forecastFull = xpp.nextText();
+                                        fcst[fcstNo] = forecastFull.substring(0,forecastFull.indexOf("<"));
+
+                                        //extract the image from it.
+                                        if (fcstNo> 0) {
+                                            getUntil = 2;
+                                            fcst[fcstNo]=fcst[fcstNo].replace("High:", "");
+                                            fcst[fcstNo]=fcst[fcstNo].replace("Low:", "");
+                                            fcst[fcstNo]=fcst[fcstNo].replace(" C", "°C");
+                                            if (fcstNo==1)
+                                                fcst[fcstNo]="   Tomm:"+ fcst[fcstNo];
+                                            else if (fcstNo==2)
+                                                fcst[fcstNo]="   DayAfter:"+ fcst[fcstNo];
+
+                                        }
+                                        else {
+                                            fcst[fcstNo]="Today:"+fcst[fcstNo].replace(" °C", "°C");
+                                        }
+                                        fcstImgUrl[fcstNo] =forecastFull.substring(forecastFull.indexOf("img src=")+9,forecastFull.indexOf(">")-getUntil);
+
+                                    }
+                                    fcstNo++;
+                                }
                             }
                         }
-                    }
-                    //if we are at an END_TAG and the END_TAG is called "item"
-                    else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item"))
-                    {
-                        insideItem = false;
+                        //if we are at an END_TAG and the END_TAG is called "item"
+                        else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item"))
+                        {
+                            insideItem = false;
+                        }
+
+                        eventType = xpp.next(); //move to next element
                     }
 
-                    eventType = xpp.next(); //move to next element
+
                 }
+                catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (XmlPullParserException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
 
-
-            }
-            catch (MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-            catch (XmlPullParserException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
         }
         else{
             try {
@@ -205,40 +215,79 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            try {
-                URL url = new URL(sURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setDoInput(true);
-                OutputStream outputStream= httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-                bufferedWriter.write(post_data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                outputStream.close();
+            MainActivity.scrSiteReachable = isServerReachable(context, "http://192.168.0.11/getFiles.php");
+            if (sURL != "http://192.168.0.11/getFiles.php")
+                bSiteReachable = isServerReachable(context, sURL);
+            else
+                bSiteReachable = MainActivity.scrSiteReachable;
+            if(bSiteReachable){
+                try {
+                    URL url = new URL(sURL);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+                    OutputStream outputStream= httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    outputStream.close();
 
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
-                sResult="";
-                String sLine="";
-                while ((sLine = bufferedReader.readLine())!=null){
-                    sResult += sLine;
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    sResult="";
+                    String sLine="";
+                    while ((sLine = bufferedReader.readLine())!=null){
+                        sResult += sLine;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+                    return sResult;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-                return sResult;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
         }
 
 
         return null;
+    }
+    static public boolean isServerReachable(Context context,String URLlink) {
+        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connMan.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            try {
+                URL urlServer = new URL(URLlink);
+                HttpURLConnection urlConn = (HttpURLConnection) urlServer.openConnection();
+                urlConn.setConnectTimeout(1000); //<- 1Second  Timeout
+                urlConn.connect();
+                if (urlConn.getResponseCode() == 200) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException e1) {
+                return false;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+    static public boolean isServerReachablestr(String URLlink) {
+
+        try {
+            InetAddress.getByName(URLlink).isReachable(2000); //Replace with your name
+            return true;
+        } catch (Exception e)
+        {
+            return false;
+        }
     }
     public InputStream getInputStream(URL url)
     {
@@ -263,6 +312,11 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
     @Override
     protected void onPostExecute(String sResult) {
 
+
+         if(sType != "getWeather" && !bSiteReachable){
+            Toast.makeText(context, sURL + "Site not Available. Type:" +sType, Toast.LENGTH_LONG).show();
+            return;
+        }
         if(sType != "getWeather" && sResult == null){
             Toast.makeText(context, "Result seems to be null.", Toast.LENGTH_LONG).show();
             return;
@@ -308,9 +362,9 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                     MainActivity.tbMBAC.setChecked(false);
 
                 if (swStatuses[3].contains("1"))
-                    MainActivity.tbLift.setChecked(true);
+                    MainActivity.tbMotor.setChecked(true);
                 else
-                    MainActivity.tbLift.setChecked(true);
+                    MainActivity.tbMotor.setChecked(false);
 
                 MainActivity.sAlert = swStatuses[4];
                 String sAlertShow="";
@@ -410,21 +464,38 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
                 }
                 String sTemp= swStatuses[16];
                 if (sTemp.length()> 0) {
+                    //String[] sTemDt = sTemp.split(":");
                     MainActivity.tbGeyser.setTextOff(sTemp +"º Geyser Off");
                     MainActivity.tbGeyser.setTextOn(sTemp +"º Geyser On");
-                    int iTemp =Integer.parseInt(sTemp);
-                    if (iTemp>32){
+                    float fTemp =Float.parseFloat(sTemp);
+                    if (fTemp>40){
                         MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector));
                     }
-                    else if (iTemp>27 && iTemp<=32){
+                    else if (fTemp>30 && fTemp<=40){
                         MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_warning));
                     }
-                    if (iTemp<=27){
+                    if (fTemp<=30){
                         MainActivity.tbGeyser.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_critical_warning));
                     }
                 }
-                if (swStatuses[17].length()> 0){
-                    String[] sTchSwSt = swStatuses[17].split("~");
+                sTemp= swStatuses[17];
+                if (sTemp.length()> 0) {
+                    //String[] sTemDt = sTemp.split(":");
+                    MainActivity.tbMotor.setTextOff(sTemp +" Motor Off");
+                    MainActivity.tbMotor.setTextOn(sTemp +" Motor On");
+                    float fTemp =Float.parseFloat(sTemp);
+                    if (fTemp>2){
+                        MainActivity.tbMotor.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_warning));
+                    }
+                    else if (fTemp>1 && fTemp<=2){
+                        MainActivity.tbMotor.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector));
+                    }
+                    if (fTemp<=1){
+                        MainActivity.tbMotor.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.toggle_selector_critical_warning));
+                    }
+                }
+                if (swStatuses[18].length()> 0){
+                    String[] sTchSwSt = swStatuses[18].split("~");
                     String[] sTchSw;
                     boolean bSwOn;
                     for(int sw = 0; sw<sTchSwSt.length; sw++) {

@@ -163,18 +163,18 @@
             tools:layout_editor_absoluteY="152dp">
 
             <ToggleButton
-                android:id="@+id/tbLift"
+                android:id="@+id/tbMotor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:background="@drawable/toggle_selector"
                 android:checked="false"
-                android:onClick="OnLift"
+                android:onClick="OnMotor"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textOff="Lift Off"
-                android:textOn="Lift On"
+                android:textOff="Motor Off"
+                android:textOn="Motor On"
                 android:textSize="50sp" />
 
             <ToggleButton

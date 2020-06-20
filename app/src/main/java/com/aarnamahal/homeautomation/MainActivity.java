@@ -42,7 +42,9 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.santalu.maskedittext.MaskEditText;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import  com.bumptech.glide.Glide;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -67,6 +69,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,61 +88,56 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             // Perform any required operation on disconnect
             //tvDebug.setText("idle now");
+
+
+
             if(tbScrSvr.isChecked()){
-                changeImgScrSvr();
-                if (!dialogScrSvr.isShowing()) {
-                    dialogScrSvr.show();
+                if (scrSiteReachable) {
+                    changeImgScrSvr();
+                    if (!dialogScrSvr.isShowing()) {
+                        dialogScrSvr.show();
+                    }
                 }
+                disconnectHandler.postDelayed(disconnectCallback, CHANGE_SCR_SAVER);
             }
         }
     };
-    private int getRightAngleImage(String photoPath) {
-
-        try {
-            ExifInterface ei = new ExifInterface(photoPath);
-            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int degree = 0;
-
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_NORMAL:
-                    degree = 0;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    degree = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    degree = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    degree = 270;
-                    break;
-                case ExifInterface.ORIENTATION_UNDEFINED:
-                    degree = 0;
-                    break;
-                default:
-                    degree = 90;
-            }
-
-            return degree;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return 90;
-    }
-    public void changeImgScrSvr(){
+     public void changeImgScrSvr(){
         imgNo++;
-
         if (imgNo>=imgMaxNo) imgNo=0;
+        imgNo = new Random().nextInt(imgMaxNo);
+         Glide
+                 .with(getApplicationContext())
+                 .load("http://192.168.0.11/pics/"+imgFiles[imgNo])
+                 .into(imageScrSvr);
         //int deg = getRightAngleImage("http://192.168.0.11/pics/"+imgFiles[imgNo]);
         //Picasso.get().load(imgUrl[imgNo]).into(imageScrSvr);
-        Picasso.get().load("http://192.168.0.11/pics/"+imgFiles[imgNo]).into(imageScrSvr);
+
+         //Picasso.get()
+           //      .load("http://192.168.0.11/pics/"+imgFiles[imgNo])
+             //    .resize(6000, 2000)
+               //  .onlyScaleDown() // the image will only be resized if it's bigger than 6000x2000 pixels.
+                 //.into(imageScrSvr);
+        //Picasso.get().load("http://192.168.0.11/pics/"+imgFiles[imgNo]).into(imageScrSvr);
+         /*Picasso.get()
+                 .load("http://192.168.0.11/pics/"+imgFiles[imgNo])
+                 .into(imageScrSvr, new Callback() {
+                     @Override
+                     public void onSuccess() {
+                     }
+
+                     @Override
+                     public void onError(Exception e) {
+                         //String s = e.printStackTrace();
+                         Toast.makeText(MainActivity.this, "Error Loading Image"+imgFiles[imgNo], Toast.LENGTH_LONG).show();
+                         //changeImgScrSvr();
+                     }
+                 });*/
+        tvDebug.setText(imgFiles[imgNo]);
         //imageScrSvr.setImageResource("");
         //new ImageLoadTask(imgFiles[imgNo], imageScrSvr).execute();
         dialogScrSvr.setContentView(imageScrSvr);
 
-        disconnectHandler.postDelayed(disconnectCallback, CHANGE_SCR_SAVER);
     }
     public void resetDisconnectTimer(){
         //tvDebug.setText("Back now");
@@ -183,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MqttAndroidClient client;
     public static Switch swMBACAuto;
-    public static ToggleButton tbMBAC, tbGeyser, tbLift, tbMain, tbBed, tbAlarm, tbScrSvr;
+    public static ToggleButton tbMBAC, tbGeyser, tbMotor, tbMain, tbBed, tbAlarm, tbScrSvr;
     public static ToggleButton tbOffAC, tbOffLgt, tbOffFan, tbLivLgtE, tbLivLgtW, tbLivFan;
     public static TextView tvCurrWtr, tvFd1Wtr, tvFd2Wtr, tvAlerts, tvLogs, tvCT, tvFNs, tvSolarMain, tvSolarBed, tvCurrTm, tvDebug;
     public static ImageView ivCurrWtr, ivFd1Wtr,ivFd2Wtr;
@@ -193,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
     public static Button btnMainDoor, btnLiftInd, btnDinAC1, btnDinAC2, btnHallAC1, btnHallAC2, btnHallAC3;
     public static String sLiftInd, sDinAC1, sDinAC2, sHallAC1, sHallAC2, sHallAC3;
     private LinearLayout llMainButtons;
+    public static boolean scrSiteReachable;
 
     public static TextToSpeech tts;
     public static String sAlert;
@@ -268,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         btnHallAC3 = (Button) findViewById(R.id.btnHallAC3Ind);
 
         tbMBAC =  findViewById(R.id.tbMBAC);
-        tbLift =  findViewById(R.id.tbLift);
+        tbMotor =  findViewById(R.id.tbMotor);
         tbGeyser =  findViewById(R.id.tbGeyser);
         tbMain = findViewById(R.id.tbMain);
         tbBed = findViewById(R.id.tbBed);
@@ -311,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
         //else
             //tvDebug.setVisibility(View.INVISIBLE);
         //tvCurrTm.setTextColor(getResources().getColor(R.color.colorLightBlue));
-        tbScrSvr.setChecked(true);
+
         if (device.equals(getResources().getStringArray(R.array.Intercoms)[3]) ||
                 device.equals(getResources().getStringArray(R.array.Intercoms)[1])||
                 device.equals(getResources().getStringArray(R.array.Intercoms)[4])) {
@@ -319,8 +318,8 @@ public class MainActivity extends AppCompatActivity {
             tbMBAC.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
             tbGeyser.setTextSize(newSize);
             tbGeyser.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
-            tbLift.setTextSize(newSize);
-            tbLift.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
+            tbMotor.setTextSize(newSize);
+            tbMotor.setPadding(newSize/2,newSize/2,newSize/2,newSize/2);
             swMBACAuto.setTextSize(newSize);
 
             btnMainDoor.setTextSize(newSize);
@@ -339,12 +338,13 @@ public class MainActivity extends AppCompatActivity {
                 //tbScrSvr.setPadding(5,5,5,5);
                 if (device.equals(getResources().getStringArray(R.array.Intercoms)[3])){//office
                     btnMainDoor.setPadding(30,30,30,30);
+                    tbScrSvr.setChecked(true);
                 }
                 else if (device.equals(getResources().getStringArray(R.array.Intercoms)[4])){// hall
                     //tbMBAC.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
                     //tbGeyser.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
-                    //tbLift.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
-                    tvDebug.setText("TBalarmTrue");
+                    //tbMotor.setTextSize(getResources().getDimensionPixelSize(R.dimen.tbTextSize));
+                    //tvDebug.setText("TBalarmTrue");
                     tbAlarm.setChecked(true);
                 }
             }
@@ -560,16 +560,22 @@ public class MainActivity extends AppCompatActivity {
     private void refreshNow(){
 
         try{
-            imgMaxNo = imgFiles.length;
+            if (imgFiles != null )
+                imgMaxNo = imgFiles.length;
+            else
+                imgMaxNo = 0;
             String CurrTm = new SimpleDateFormat("EEE d,h:mm").format(Calendar.getInstance().getTime()).toString();
             CurrTm = CurrTm.replace(" ","");
             tvCurrTm.setText(CurrTm);
             if(timerSnooze > 0)
-                if (timerInc%(timerSnooze*14) == 0){
+                if (timerInc>(timerSnooze*14)){
                     tbAlarm.setChecked(true);
                     timerSnooze =0;
+                    timerInc=0;
                 }
 
+            backGroundActivity bA = new backGroundActivity(MainActivity.this);
+            bA.execute("getImgFiles");
             backGroundActivity bASS = new backGroundActivity(MainActivity.this);
             bASS.execute("getSwitchStatus");
             backGroundActivity bAwtr = new backGroundActivity(MainActivity.this);
@@ -675,9 +681,14 @@ public class MainActivity extends AppCompatActivity {
         btnHallAC3.setText(sHallAC3);
         sHallAC3 = sReplace;
     }
-    public void OnLift (View view){
-        if (tbLift.isChecked()){
-            Publish("/home/liftOnCmd", "1"); // switch on Lift manually
+    public void OnMotor (View view){
+        String sMotorOn = tbMotor.isChecked() ? "1":"0";
+
+        backGroundActivity bA = new backGroundActivity(MainActivity.this);
+        bA.execute("execUrl", "SwOnOffMotor.php?OnOff="+sMotorOn);
+
+/*        if (tbMotor.isChecked()){
+            Publish("/home/MotorOnCmd", "1"); // switch on Motor manually
         } else {
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
@@ -685,7 +696,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
                             //Yes button clicked
-                            Publish("/home/liftOnCmd", "0"); // switch off Lift manually
+                            Publish("/home/MotorOnCmd", "0"); // switch off Motor manually
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
@@ -696,9 +707,9 @@ public class MainActivity extends AppCompatActivity {
             };
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("Are you sure you want to Turn off Lift?").setPositiveButton("Yes", dialogClickListener)
+            builder.setMessage("Are you sure you want to Turn off Motor?").setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
-        }
+        }*/
     }
     public void OnAutoMBAC (View view){
         String sDisabledFlag = swMBACAuto.isChecked() ? "0":"1";
