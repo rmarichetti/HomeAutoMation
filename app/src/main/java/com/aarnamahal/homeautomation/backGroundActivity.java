@@ -51,7 +51,7 @@ public class backGroundActivity  extends AsyncTask<String,Void,String> {
         sType = params[0];
         String post_data="";
         if(sType.equals("getWeather")) {
-
+//Motor
             bSiteReachable = isServerReachable(context, "http://rss.accuweather.com/rss/liveweather_rss.asp?metric=1&locCode=VOMM");
 //            if (sURL != "http://192.168.0.11/getFiles.php")
 //                bSiteReachable = isServerReachable(context, sURL);

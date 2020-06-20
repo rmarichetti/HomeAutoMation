@@ -579,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
             backGroundActivity bASS = new backGroundActivity(MainActivity.this);
             bASS.execute("getSwitchStatus");
             backGroundActivity bAwtr = new backGroundActivity(MainActivity.this);
-            bAwtr.execute("getWeather");
+             bAwtr.execute("getWeather");
             backGroundActivity bAlogs = new backGroundActivity(MainActivity.this);
             bAlogs.execute("getLogs");
             backGroundActivity bAkWh = new backGroundActivity(MainActivity.this);
